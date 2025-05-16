@@ -1,0 +1,56 @@
+{% extends "panel/base.html" %}
+{% load static %}
+
+{% block content %}
+    <main class="main-page">
+        <div class="container d-flex justify-content-center align-items-center vh-100">
+            <div class="forms-signup shadow-lg p-4 bg-light rounded border" style="max-width: 480px;">
+                <h3 class="text-center mb-4">Inscription</h3>
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="nameInput" class="form-label">Nom</label>
+                        <input type="text" class="form-control" id="nameControlInput" placeholder="Exemple : Doe" name="nameControlInput">
+                    </div>
+                    <div class="mb-3">
+                        <label for="lastNameInput" class="form-label">Prénom</label>
+                        <input type="text" class="form-control" id="lastNameControlInput" placeholder="Exemple : John" name="lastNameControlInput">
+                    </div>
+                    <div class="mb-3">
+                        <label for="usernameInput" class="form-label">Nom utilisateur</label>
+                        <input type="text" class="form-control" id="userNameControlInput" placeholder="Exemple : NevGhost" name="userNameControlInput">
+                    </div>
+                    <div class="mb-3">
+                        <label for="emailInput" class="form-label">Adresse mail</label>
+                        <input type="email" class="form-control" id="emailControlInput" placeholder="Exemple : exemple@exemple.com" name="emailControlInput">
+                    </div>
+                    <div class="mb-3">
+                        <label for="passwordInput" class="form-label">Mot de passe</label>
+                        <input type="password" class="form-control" id="passwordControlInput" placeholder="*****" name="passwordControlInput">
+                    </div>
+                    <div class="error-message mt-3">
+                        {% if message %}
+                            <p style="color: red;">{{ message }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-success btn-lg w-100">S'inscrire</button>
+                    </div>
+                    <div class="text-center mt-3">
+                        <p>
+                            Vous avez déjà un compte ? <a href="{% url 'perform_login' %}" class="text-primary fw-bold">Connectez-vous</a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    {% if show_popup %}
+        <script>
+            alert("Inscription réussie ! Vous allez être redirigé vers la page de connexion.");
+            window.location.href = "/";  // Redirection après l'alerte
+        </script>
+    {% endif %}
+
+{% endblock %}
