@@ -1,13 +1,12 @@
-{% extends "panel/base.html" %}
-
-{% load static %}
-
-
+{% extends "panel/base.html" %} 
+{% load static %} 
 {% block content %}
 
-<h1>
-    Bonjour
-</h1>
-    
+    <main>
+        <div class="container d-flex justify-content-center mt-5 gap-3">
+            <div class="p-2 bg-primary text-white">Item 1</div>
+            <div class="p-2 bg-secondary text-white">Item 2</div>
+            <div class="p-2 bg-success text-white">Item 3</div>
+        </div>
+    </main>
 {% endblock content %}
-    

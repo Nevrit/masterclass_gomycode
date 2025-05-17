@@ -1,49 +1,52 @@
-from django.http import HttpResponseRedirect
-from django.shortcuts import render
-from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+from django.contrib.auth.models import User
 
-def index(request):
-    return render(request, 'pages/index.html')
-
-# Create your views here.
-def perform_login(request):
-    message = ""
+@csrf_exempt
+def register_view(request):
     if request.method == "POST":
-        username = request.POST.get('userNameControlInput')
-        password = request.POST.get('passwordControlInput')
-        if check_user_exists(username):
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                login(request, user)
-                return HttpResponseRedirect('accueil')
-            else:
-                message = "Mot de passe incorrecte"
-        else:
-            message = "L'utilisateur n'existe pas dans la base de données"
+        try:
+            data = json.loads(request.body)
+            first_name = data.get('name') 
+            last_name = data.get('lastName') 
+            username = data.get('username')
+            email = data.get('email')
+            password = data.get('password')
             
-    context = {"message" : message}
-    return render(request, 'pages/login_page.html', context)
+            if User.objects.filter(username=username).exists():
+                return JsonResponse({'message': "L'utilisateur existe déjà"}, status=400)
 
+            User.objects.create_user(username=username, password=password, email=email, first_name=first_name, last_name=last_name)
+            return JsonResponse({'message': "Inscription réussie ! Vous pouvez maintenant vous connecter"}, status=201)
+        
+        except json.JSONDecodeError:
+            return JsonResponse({'message': "Données invalides"}, status=400)
 
-def perfom_inscription(request):
-    message = ""  # Initialise le message
-    show_popup = False  # Initialise la variable du pop-up
+    return JsonResponse({'message': "Méthode non autorisée"}, status=405)  # Ajoute une réponse pour GET
 
+@csrf_exempt
+def login_view(request):
     if request.method == "POST":
-        name = request.POST.get('nameControlInput')
-        last_name = request.POST.get('lastNameControlInput')
-        username = request.POST.get('userNameControlInput')
-        email = request.POST.get('emailControlInput')
-        password = request.POST.get('passwordControlInput')
+        try:
+            data = json.loads(request.body)
+            username = data.get('username')
+            password = data.get('password')
 
-        if check_user_exists(username):
-            message = "L'utilisateur existe déjà dans la base de données."
-        else:
-            User.objects.create(username=username, password=password, email=email, first_name=name, last_name=last_name)
-            show_popup = True  # Active le pop-up
-    context = {"message": message, "show_popup": show_popup}
-    return render(request, 'pages/inscription_page.html', context)
+            user = authenticate(username=username, password=password)
+            if user:
+                login(request, user)
+                return JsonResponse({'message': 'Connexion réussie', 'user': username}, status=200)
+            else:
+                return JsonResponse({'message': 'Identifiants incorrects'}, status=400)
+        except json.JSONDecodeError:
+            return JsonResponse({'message': "Données invalides"}, status=400)
+    
+    return JsonResponse({'message': "Méthode non autorisée"}, status=405)  # Ajoute une réponse pour GET
+    
 
-def check_user_exists(username):
-    return User.objects.filter(username=username).exists()
+@csrf_exempt
+def logout_view(request):
+    logout(request)
+    return JsonResponse({'message': 'Déconnexion réussie'}, status=200)
