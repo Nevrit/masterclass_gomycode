@@ -26,7 +26,15 @@ SECRET_KEY = 'django-insecure-zg*z+l*lklmf1@x*h)$91ezwz)q76=xe^m2wx7c@=n!kb)iy=f
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', ]
+
+# CSRF settings
+# https://docs.djangoproject.com/en/5.2/ref/settings/#csrf-csrf-trusted-origins
+# Définir les origines de confiance pour CSRF
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+]
+
 
 
 # Application definition
@@ -70,6 +78,12 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',  # Accès restreint aux utilisateurs authentifiés
     ],
 }
+CORS_ALLOW_CREDENTIALS = True  # ✅ Autorise l'envoi des cookies
+
+SESSION_COOKIE_SAMESITE = 'Lax'  # Permet aux cookies de traverser les domaines
+SESSION_COOKIE_SECURE = False  # Ne pas forcer HTTPS pour les tests en local
+CSRF_COOKIE_SECURE = False  # Ne pas forcer HTTPS pour les tests en local
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
 
 ROOT_URLCONF = 'settings.urls'
 

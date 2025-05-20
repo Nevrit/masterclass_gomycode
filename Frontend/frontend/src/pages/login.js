@@ -1,7 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Cookies from "js-cookie";
+
+
+axios.defaults.withCredentials = true;
+
 
 function Login() {
+
+    useEffect(() => {
+    axios
+      .get("http://localhost:8000/api/csrf/", { withCredentials: true })
+      .then(() => console.log("CSRF token récupéré", Cookies.get("csrftoken")))
+      .catch((err) => console.error("Erreur récupération CSRF :", err));
+  }, []);
+
     const [formData, setFormData] = useState({
         username: "",
         password: "",
@@ -17,9 +30,22 @@ function Login() {
         e.preventDefault();
 
         try {
-            const response = await axios.post("http://127.0.0.1:8000/api/login/", formData);
+
+            const response = await axios.post("http://localhost:8000/api/login/", formData, 
+                {
+                    headers: {
+                        "X-CSRFToken": Cookies.get("csrftoken"),
+                        "Content-Type": "application/json",
+                    },
+                    withCredentials: true,
+                }
+            );
+
+            if(response.data.token) {
+                localStorage.setItem("authToken", response.data.token);
+            }
             setMessage(response.data.message);
-            alert("Connexion réussie !");
+            alert(`Connexion réussie !`);
             window.location.href = "/dashboard";  // Redirection après la connexion réussie
         } catch (error) {
             setMessage(error.response?.data?.message || "Identifiants incorrects");
