@@ -1,10 +1,11 @@
 from django.urls import path
-from .views import login_view, logout_view, register_view, dashboard_view, get_csrf_token
+from .views import login_view, logout_view, register_view, dashboard_view, get_csrf_token, get_user_tickets
 
 urlpatterns = [
     path('api/csrf/', get_csrf_token, name='get_csrf_token'),
     path('api/register/', register_view, name='register'),
     path('api/login/', login_view, name='login'),
     path('api/logout/', logout_view, name='logout'),
-    path('api/dashboard', dashboard_view, name="dashboard")
+    path('api/dashboard', dashboard_view, name="dashboard"),
+    path('api/get_tickets/', get_user_tickets, name='get_user_tickets')
 ]

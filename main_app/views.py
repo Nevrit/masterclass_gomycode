@@ -11,6 +11,15 @@ from django.views.decorators.http import require_POST
 def get_csrf_token(request):
     return JsonResponse({'message': "CSRF cookie set"})
 
+@ensure_csrf_cookie
+def get_user_tickets(request):
+    if request.user.is_authenticated:
+        tickets = Ticket.objects.filter(created_by=request.user)
+        tickets_data = [{'id': ticket.id, 'title': ticket.title, 'description': ticket.description, 'status' : ticket.status, 'created_at' : ticket.created_at} for ticket in tickets]
+        return JsonResponse({'tickets': tickets_data}, status=200)
+    else:
+        return JsonResponse({'message': "Veuillez vous authentifier"}, status=401)
+
 @require_POST
 @ensure_csrf_cookie
 def register_view(request):
