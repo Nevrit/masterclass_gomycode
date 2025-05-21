@@ -9,6 +9,7 @@ function Dashboard() {
   const [formData, setFormData] = useState({ title: "", description: "" });
   const [tableData, setTableData] = useState([]);
 
+  // Récupérer les tokens au rechargement de la page
   useEffect(() => {
     axios
       .get("http://localhost:8000/api/csrf/", { withCredentials: true })
@@ -16,25 +17,52 @@ function Dashboard() {
       .catch((err) => console.error("Erreur récupération CSRF :", err));
   }, []);
 
+  // Récupérer les tickets au rechargement de la page
   useEffect(() => {
-    axios.get("http://localhost:8000/api/get_tickets/", {
-      withCredentials: true,
-    });
     get_tickets();
   }, []);
 
+  // La fonction permet de récupérer les tickets, elle est appelée dans useEffect
   function get_tickets() {
     axios
       .get("http://localhost:8000/api/get_tickets/", { withCredentials: true })
       .then((response) => {
         console.log("Données reçues :", response.data); // Vérification
-        setTableData(response.data.tickets || []); // Correction ici
+        setTableData(response.data.tickets || []); 
       })
       .catch((error) => {
         console.error("Erreur :", error);
       });
   }
 
+  function get_opened_tickets() {
+    axios.get("http://localhost:8000/api/get_opened_tickets", { withCredentials : true}).then((response) => {
+      setTableData(response.data.tickets || []);
+      console.log("Table data : ",tableData)
+    }).catch((error) => {
+      console.error("Erreur :", error)
+    })
+  }
+
+  function get_in_progress_tickets() {
+    axios.get("http://localhost:8000/api/get_in_progress_tickets", { withCredentials : true}).then((response) => {
+      setTableData(response.data.tickets || []);
+      console.log("Table data : ",tableData)
+    }).catch((error) => {
+      console.error("Erreur :", error)
+    })
+  }
+
+  function get_closed_tickets() {
+    axios.get("http://localhost:8000/api/get_closed_tickets", { withCredentials : true}).then((response) => {
+      setTableData(response.data.tickets || []);
+      console.log("Table data : ",tableData)
+    }).catch((error) => {
+      console.error("Erreur :", error)
+    })
+  }
+
+  // Fonction qui permet de récupérer les valeurs saisies dans le formulaire
   function handleChange(e) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   }
@@ -131,7 +159,6 @@ function Dashboard() {
         </div>
 
         {/* Section de filtre */}
-        {/* Section de filtre */}
         <div className="container shadow-sm p-3 mb-5 bg-body rounded mt-5">
           <div className="filter-object d-flex flex-wrap justify-content-between gap-3">
             {/* Filtre par statut */}
@@ -146,81 +173,23 @@ function Dashboard() {
               </button>
               <ul className="dropdown-menu">
                 <li>
-                  <a className="dropdown-item" href="#">
+                  <a className="dropdown-item" onClick={get_tickets}>
+                    Tous
+                  </a>
+                </li>
+                <li>
+                  <a className="dropdown-item" onClick={get_opened_tickets}>
                     Ouvert
                   </a>
                 </li>
                 <li>
-                  <a className="dropdown-item" href="#">
+                  <a className="dropdown-item" onClick={get_in_progress_tickets}>
                     En cours
                   </a>
                 </li>
                 <li>
-                  <a className="dropdown-item" href="#">
+                  <a className="dropdown-item" onClick={get_closed_tickets}>
                     Fermé
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            {/* Filtre par priorité */}
-            <div className="dropdown">
-              <button
-                className="btn btn-light dropdown-toggle"
-                type="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                Filtrer par priorité
-              </button>
-              <ul className="dropdown-menu">
-                <li>
-                  <a className="dropdown-item" href="#">
-                    Basse
-                  </a>
-                </li>
-                <li>
-                  <a className="dropdown-item" href="#">
-                    Moyenne
-                  </a>
-                </li>
-                <li>
-                  <a className="dropdown-item" href="#">
-                    Haute
-                  </a>
-                </li>
-                <li>
-                  <a className="dropdown-item" href="#">
-                    Critique
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            {/* Filtre par date */}
-            <div className="dropdown">
-              <button
-                className="btn btn-light dropdown-toggle"
-                type="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                Filtrer par date
-              </button>
-              <ul className="dropdown-menu">
-                <li>
-                  <a className="dropdown-item" href="#">
-                    Aujourd'hui
-                  </a>
-                </li>
-                <li>
-                  <a className="dropdown-item" href="#">
-                    Cette semaine
-                  </a>
-                </li>
-                <li>
-                  <a className="dropdown-item" href="#">
-                    Ce mois-ci
                   </a>
                 </li>
               </ul>

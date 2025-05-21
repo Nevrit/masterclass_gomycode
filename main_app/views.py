@@ -14,11 +14,38 @@ def get_csrf_token(request):
 @ensure_csrf_cookie
 def get_user_tickets(request):
     if request.user.is_authenticated:
-        tickets = Ticket.objects.filter(created_by=request.user)
+        tickets = Ticket.objects.filter(created_by=request.user).order_by('-id')
         tickets_data = [{'id': ticket.id, 'title': ticket.title, 'description': ticket.description, 'status' : ticket.status, 'created_at' : ticket.created_at} for ticket in tickets]
         return JsonResponse({'tickets': tickets_data}, status=200)
     else:
         return JsonResponse({'message': "Veuillez vous authentifier"}, status=401)
+    
+@ensure_csrf_cookie
+def get_opened_tickets(request):
+    if request.user.is_authenticated:
+        tickets = Ticket.objects.filter(created_by=request.user, status="open").order_by('-id')
+        tickets_data = [{'id': ticket.id, 'title': ticket.title, 'description': ticket.description, 'status' : ticket.status, 'created_at' : ticket.created_at} for ticket in tickets]
+        return JsonResponse({'tickets' : tickets_data}, status=200)
+    else:
+        return JsonResponse({'message' : "Veuillez vous authentifier"}, status=401)
+    
+@ensure_csrf_cookie
+def get_in_progress_tickets(request):
+    if request.user.is_authenticated:
+        tickets = Ticket.objects.filter(created_by=request.user, status="in_progress").order_by('-id')
+        tickets_data = [{'id': ticket.id, 'title': ticket.title, 'description': ticket.description, 'status' : ticket.status, 'created_at' : ticket.created_at} for ticket in tickets]
+        return JsonResponse({'tickets' : tickets_data}, status=200)
+    else:
+        return JsonResponse({'message' : "Veuillez vous authentifier"}, status=401)
+    
+@ensure_csrf_cookie
+def get_closed_tickets(request):
+    if request.user.is_authenticated:
+        tickets = Ticket.objects.filter(created_by=request.user, status="closed").order_by('-id')
+        tickets_data = [{'id': ticket.id, 'title': ticket.title, 'description': ticket.description, 'status' : ticket.status, 'created_at' : ticket.created_at} for ticket in tickets]
+        return JsonResponse({'tickets' : tickets_data}, status=200)
+    else:
+        return JsonResponse({'message' : "Veuillez vous authentifier"}, status=401)
 
 @require_POST
 @ensure_csrf_cookie
